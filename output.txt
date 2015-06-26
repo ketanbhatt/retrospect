@@ -1,2 +1,0 @@
-"ketanbhatt@k2mach: ~/code/serious/retrospect"
-"gnome-terminal", "Gnome-terminal"
