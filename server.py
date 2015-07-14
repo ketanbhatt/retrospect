@@ -18,20 +18,7 @@ NET_WM_NAME = disp.intern_atom('_NET_WM_NAME')
 NET_ACTIVE_WINDOW = disp.intern_atom('_NET_ACTIVE_WINDOW')
 WM_CLASS = disp.intern_atom('WM_CLASS')
 
-
-#retro = {};
-
-# {
-# 	"chrome": {
-# 	"facebook": 2.34,
-# 	"gmail": 2.12
-# 	},
-# 	"terminal": {
-# 	"bla": 12.34
-# 	}
-# }
-
-
+# DB
 # {
 # 	chrome: facebook,gmail
 # 	facebook: 5
@@ -77,7 +64,7 @@ while True:
 		window.change_attributes(event_mask=Xlib.X.PropertyChangeMask)
 		
 		window_name = window.get_full_property(NET_WM_NAME, 0).value
-		window_class = window.get_full_property(WM_CLASS, 0).value.split("\x00")[0]
+		window_class = window.get_full_property(WM_CLASS, 0).value.split("\x00")[1]
 
 			
 	except :

@@ -2,5 +2,7 @@ output.txt
 test
 *pyc
 *~
+dump.rdb
+
 
 redis*
