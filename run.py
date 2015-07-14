@@ -4,59 +4,50 @@ import time
 
 disp = Xlib.display.Display()
 root = disp.screen().root
-root.change_attributes(event_mask=Xlib.X.FocusChangeMask)
-
-NET_WM_NAME = 345 #disp.intern_atom('_NET_WM_NAME')
-NET_ACTIVE_WINDOW = 337 #disp.intern_atom('_NET_ACTIVE_WINDOW')
-WINDOW_IS = 67
-
-prevWindow_name = ""
-prevWindow_is = ""
-timeStart = None
 
 
-mydict = {}
+NET_WM_NAME = disp.intern_atom('_NET_WM_NAME')
+NET_ACTIVE_WINDOW = disp.intern_atom('_NET_ACTIVE_WINDOW')
+NET_WM_USER_TIME = disp.intern_atom('_NET_WM_USER_TIME')
+WM_CLASS = disp.intern_atom('WM_CLASS')
+
+
+# mydict = {}
+
+prevWindow_name = None
+prev = time.time()
 
 while True:
-	
 	try:
+		#print "I ran"
+		
 		window_id = root.get_full_property(NET_ACTIVE_WINDOW, Xlib.X.AnyPropertyType).value[0]
 		window = disp.create_resource_object('window', window_id)
-		window.change_attributes(event_mask=Xlib.X.PropertyChangeMask)
+		window.change_attributes(event_mask=Xlib.X.StructureNotifyMask)
 		
 		window_name = window.get_full_property(NET_WM_NAME, 0).value
-		window_is = window.get_full_property(WINDOW_IS, 0).value
-	
-		if window_name != prevWindow_name or window_is != prevWindow_is:
-			if not timeStart:
-				timeStart = time.time()
+		window_class = window.get_full_property(WM_CLASS, 0).value
+
+
+		if window_name != prevWindow_name:
+			curr = time.time()
+			print "Name: ", window_name, curr-prev #, " Type:", window_class, "Time: ", curr-prev
+			
 			prevWindow_name = window_name
-			prevWindow_is = window_is
+			prevWindow_class = window_class
+			prev = curr
 			
-			timeEnd = time.time()
-			timeDiff = timeEnd-timeStart
-			timeStart = timeEnd
-			
-			timeDiff = str(timeDiff)
-			timeDiff = float(timeDiff[:timeDiff.find('.')+3])
+		window_user_time = window.get_full_property(NET_WM_USER_TIME, 0).value[0]/1000.0
 
-			print timeDiff
-
-			if window_name not in mydict.keys():
-				mydict[window_name] = [window_name,window_is,timeDiff]
-			else:
-				mydict[window_name][2] += timeDiff
-
-			for key in mydict.keys():
-				print mydict[key]
-
-			# print "%.2f" % timeDiff
-			# print window_name
-			# print window_is
-			
+		
 	except Xlib.error.XError:
+		print "i fell"
 		window_name = None
 	
-
+	#print "here1"
 	event = disp.next_event()
+	#print "here2"
+	
+
+
 	
