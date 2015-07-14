@@ -8,14 +8,23 @@ root = disp.screen().root
 
 NET_WM_NAME = disp.intern_atom('_NET_WM_NAME')
 NET_ACTIVE_WINDOW = disp.intern_atom('_NET_ACTIVE_WINDOW')
-NET_WM_USER_TIME = disp.intern_atom('_NET_WM_USER_TIME')
 WM_CLASS = disp.intern_atom('WM_CLASS')
 
 
-# mydict = {}
+retro = {};
+# {
+# 	"chrome": {
+# 	"facebook": 2.34,
+# 	"gmail": 2.12
+# 	},
+# 	"terminal": {
+# 	"bla": 12.34
+# 	}
+# }
 
-prevWindow_name = None
-prev = time.time()
+prev_window_name = None
+prev_window_class = None
+prev_timestamp = time.time()
 
 while True:
 	try:
@@ -26,27 +35,32 @@ while True:
 		window.change_attributes(event_mask=Xlib.X.StructureNotifyMask)
 		
 		window_name = window.get_full_property(NET_WM_NAME, 0).value
-		window_class = window.get_full_property(WM_CLASS, 0).value
+		window_class = window.get_full_property(WM_CLASS, 0).value.split("\x00")[0]
 
 
-		if window_name != prevWindow_name:
-			curr = time.time()
-			print "Name: ", window_name, curr-prev #, " Type:", window_class, "Time: ", curr-prev
+		if window_name != prev_window_name:
+			curr_timestamp = time.time()
+			time_spent = int(curr_timestamp-prev_timestamp)
+
+			if window_class in retro:
+				retro[window_class][window_name] += time_spent
+			else:
+				retro[window_class] = {}
+				retro[window_class][window_name] = time_spent
+
+			print retro
 			
-			prevWindow_name = window_name
-			prevWindow_class = window_class
-			prev = curr
+			prev_window_name = window_name
+			prev_window_class = window_class
+			prev_timestamp = curr_timestamp
 			
-		window_user_time = window.get_full_property(NET_WM_USER_TIME, 0).value[0]/1000.0
 
 		
 	except Xlib.error.XError:
 		print "i fell"
 		window_name = None
 	
-	#print "here1"
 	event = disp.next_event()
-	#print "here2"
 	
 
 
