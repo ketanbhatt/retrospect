@@ -4,8 +4,11 @@ import Xlib.display
 import time
 
 
-# init
+# Setting and clearing DB
 DB = redis.Redis('localhost')
+DB.flushall()
+
+# init
 disp = Xlib.display.Display()
 root = disp.screen().root
 root.change_attributes(event_mask=Xlib.X.PropertyChangeMask)
