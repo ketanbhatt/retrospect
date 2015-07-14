@@ -2,3 +2,5 @@ output.txt
 test
 *pyc
 *~
+
+redis*
