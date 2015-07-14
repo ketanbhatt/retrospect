@@ -1,9 +1,11 @@
 #-*- coding:utf-8 -*-
+import redis
 import Xlib.display
 import time
 
 
 # init
+DB = redis.Redis('localhost')
 disp = Xlib.display.Display()
 root = disp.screen().root
 root.change_attributes(event_mask=Xlib.X.PropertyChangeMask)
@@ -47,26 +49,24 @@ prev_timestamp = time.time()
 while True:
 
 	event = disp.next_event()
-	if event.atom == NET_ACTIVE_WINDOW or disp.get_atom_name(event.atom)=='WM_NAME':
-		pass
-	else:
+	try:
+		if event.atom == NET_ACTIVE_WINDOW or disp.get_atom_name(event.atom)=='WM_NAME':
+			pass
+		else:
+			continue
+	except:
 		continue
 	
 	try:
 		curr_timestamp = time.time()
 		time_spent = int(curr_timestamp-prev_timestamp)
 
-		if time_spent:
-			# if window_class in retro:
-			# 	if window_name in retro[window_class]:
-			# 		retro[window_class][window_name] += time_spent
-			# 	else:
-			# 		retro[window_class][window_name] = time_spent
-			# else:
-			# 	retro[window_class] = {}
-			# 	retro[window_class][window_name] = time_spent
-
+		if time_spent and window_name:
 			prev_timestamp = curr_timestamp
+
+			DB.sadd(window_class, window_name)
+			DB.incrby(window_name, time_spent)
+
 			print "class:",window_class,"name:",window_name,"time:",time_spent
 
 		window_id = root.get_full_property(NET_ACTIVE_WINDOW, Xlib.X.AnyPropertyType).value[0]
