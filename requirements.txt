@@ -1,3 +1,0 @@
-python-xlib==0.15rc1
-redis==2.10.3
-wsgiref==0.1.2

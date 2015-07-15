@@ -57,7 +57,7 @@ while True:
 			DB.sadd(window_class, window_name)
 			DB.incrby(window_name, time_spent)
 
-			print "class:",window_class,"name:",window_name,"time:",time_spent
+			# print "class:",window_class,"name:",window_name,"time:",time_spent
 
 		window_id = root.get_full_property(NET_ACTIVE_WINDOW, Xlib.X.AnyPropertyType).value[0]
 		window = disp.create_resource_object('window', window_id)
